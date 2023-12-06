@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
 
@@ -14,5 +14,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Docker login
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.PUSH_USERNAME }}
+        password: ${{ secrets.PUSH_TOKEN }}
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file Dockerfile --tag ${{ secrets.PUSH_USERNAME }}/jira:latest
+    - name: Docker image push
+      run: docker push ${{ secrets.PUSH_USERNAME }}/jira:latest
